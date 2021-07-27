@@ -122,7 +122,7 @@ func TestStaticFileServer(t *testing.T) {
 
 	// statusCode should be 200
 	if res.StatusCode != http.StatusOK {
-		t.Errorf("StatusCode should be 405, got %d", res.StatusCode)
+		t.Errorf("StatusCode should be 200, got %d", res.StatusCode)
 	}
 
 	// ofc can't test the entire HTML
