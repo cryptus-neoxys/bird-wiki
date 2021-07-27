@@ -47,22 +47,22 @@ func TestRouter(t *testing.T) {
 
 	// The mock server runs and exposes location in .URL
 	// make GET to "/hello" route defined in router
-	resp, err := http.Get(mockServer.URL + "/hello")
+	res, err := http.Get(mockServer.URL + "/hello")
 
 	// handle err
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	// resp.StatusCode should be 200
-	if resp.StatusCode != http.StatusOK {
+	// res.StatusCode should be 200
+	if res.StatusCode != http.StatusOK {
 		t.Errorf("Status should be ok, but got %v", err)
 	}
 
-	// read resp, convert to string
-	defer resp.Body.Close()
+	// read res, convert to string
+	defer res.Body.Close()
 	// read body into bytes[] b
-	b, err := ioutil.ReadAll(resp.Body)
+	b, err := ioutil.ReadAll(res.Body)
 
 	if err != nil {
 		t.Fatal(err)
@@ -84,20 +84,20 @@ func TestNonExistentRoute (t *testing.T) {
 
 	mockServer := httptest.NewServer(r)
 
-	resp, err := http.Post(mockServer.URL + "/hello", "", nil)
+	res, err := http.Post(mockServer.URL + "/hello", "", nil)
 
 	if err  != nil {
 		t.Fatal(err)
 	}
 
 	// status should be 405 (method not allowed)
-	if resp.StatusCode != http.StatusMethodNotAllowed {
-		t.Errorf("Status should be 405, got %d", resp.StatusCode)
+	if res.StatusCode != http.StatusMethodNotAllowed {
+		t.Errorf("StatusCode should be 405, got %d", res.StatusCode)
 	}
 
 	// expecting an empty body
-	defer resp.Body.Close()
-	b, err := ioutil.ReadAll(resp.Body)
+	defer res.Body.Close()
+	b, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -108,4 +108,30 @@ func TestNonExistentRoute (t *testing.T) {
 		t.Errorf("Unexpected response body, got %s want %s", respStr, expected)
 	}
 
+}
+
+func TestStaticFileServer(t *testing.T) {
+	r := newRouter()
+	mockServer := httptest.NewServer(r)
+
+	// hit `GET /assets/` and get index.html 
+	res, err := http.Get(mockServer.URL + "/assets/")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// statusCode should be 200
+	if res.StatusCode != http.StatusOK {
+		t.Errorf("StatusCode should be 405, got %d", res.StatusCode)
+	}
+
+	// ofc can't test the entire HTML
+	// so test the content-type header == "text/html; charset=utf-8"
+	// thats oke, ig to know html is being served
+	contentType := res.Header.Get("Content-Type")
+	expectedContentType := "text/html; charset=utf-8"
+
+	if contentType != expectedContentType {
+		t.Errorf("Wrong content type, expected %s, got %s", expectedContentType, contentType)
+	}
 }
