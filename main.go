@@ -7,11 +7,18 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func main()  {
+// This creates the router and returns it
+// Using this instantiate router in main
+func newRouter() *mux.Router {
 	r := mux.NewRouter()
-
 	r.HandleFunc("/", handler).Methods("GET")
 
+	return r
+}
+
+func main()  {
+	// Router now instantiated with the above `newRouter` constructor
+	r := newRouter()
 	http.ListenAndServe(":8081", r)
 }
 
