@@ -14,6 +14,11 @@ type Bird struct {
 func GetBirdHandler (rw http.ResponseWriter, r *http.Request) {
 	// Get birds from db, instead of pkg level `birds`
 	birds, err := store.GetBirds()
+	if err != nil {
+		fmt.Println(fmt.Errorf("error: %v", err))
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
 
 	birdListBytes, err := json.Marshal(birds)
@@ -51,7 +56,9 @@ func CreateBirdHandler (rw http.ResponseWriter, r *http.Request) {
 	// instead of adding bird to the list, commit to db
 	err = store.CreateBird(&bird)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(fmt.Errorf("error: %v", err))
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	//Finally, we redirect the user to the original HTMl page
