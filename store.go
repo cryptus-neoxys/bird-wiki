@@ -56,6 +56,6 @@ var  store Store
 
 // Used to initialise store at start of application
 // i.e. when starting server / mocking API
-func initStore (s Store) {
+func InitStore (s Store) {
 	store = s
 }
