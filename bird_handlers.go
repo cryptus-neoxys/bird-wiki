@@ -11,9 +11,11 @@ type Bird struct {
 	Description string `json:"description"`
 }
 
-var birds []Bird
-
 func GetBirdHandler (rw http.ResponseWriter, r *http.Request) {
+	// Get birds from db, instead of pkg level `birds`
+	birds, err := store.GetBirds()
+
+
 	birdListBytes, err := json.Marshal(birds)
 
 	// if err -> print and return
@@ -46,8 +48,11 @@ func CreateBirdHandler (rw http.ResponseWriter, r *http.Request) {
 	bird.Species = r.Form.Get("species")
 	bird.Description = r.Form.Get("description")
 
-	// add bird to the list
-	birds = append(birds, bird)
+	// instead of adding bird to the list, commit to db
+	err = store.CreateBird(&bird)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	//Finally, we redirect the user to the original HTMl page
 	// (located at `/assets/`), using the http libraries `Redirect` method
