@@ -21,7 +21,7 @@ func (store *dbStore) CreateBird(bird *Bird) error {
 	// The first underscore means data isn't required from 
 	// insert query. if it was inserted correctly,
 	// and the error will be populated if it wasn't
-	_, err := store.db.Query("INSERT INTO birds(species, description) VAUES($1, $2)", bird.Species, bird.Description)
+	_, err := store.db.Query("INSERT INTO birds(species, description) VALUES(?, ?)", bird.Species, bird.Description)
 	return err
 }
 
