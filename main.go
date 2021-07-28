@@ -1,9 +1,11 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 )
 
@@ -39,6 +41,19 @@ func newRouter() *mux.Router {
 }
 
 func main()  {
+
+	// Add store
+	connString := "dev:123456@/bird_wiki"
+	db, err := sql.Open("mysql", connString)
+	if err != nil {
+		panic(err)
+	}
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+	InitStore(&dbStore{db: db})
+
 	// Router now instantiated with the above `newRouter` constructor
 	r := newRouter()
 	http.ListenAndServe(":8081", r)
